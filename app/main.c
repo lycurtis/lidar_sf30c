@@ -36,12 +36,23 @@ int main(void) {
     len = sf_build_cmd('U', 2, cmd, sizeof(cmd)); // "#U2:" --> serial output rate 5002
     usart_write(BSP_USART_LIDAR, cmd, len);
 
+    uint32_t reading_count = 0;
+    uint32_t last_report = BSP_GetTick();
+
     for (;;) {
         if (usart_rx_ready(BSP_USART_LIDAR)) {
             uint8_t b = usart_read_byte(BSP_USART_LIDAR);
             if (sf_parser_feed(&lidar_ctx, b)) {
-                printf("Distance: %u cm\r\n", lidar_ctx.distance_cm);
+                reading_count++;
             }
+        }
+
+        uint32_t now = BSP_GetTick();
+        if (now - last_report >= 1000) {
+            printf("Rate: %lu Hz  Last: %u cm\r\n",
+                   reading_count, lidar_ctx.distance_cm);
+            reading_count = 0;
+            last_report = now;
         }
     }
 }
