@@ -25,8 +25,23 @@ int main(void) {
     };
     usart_init(&debug);
 
+    static sf_parse_ctx_t lidar_ctx;
+    sf_parser_init(&lidar_ctx);
+
+    // Configure 5002 Hz Update Rate
+    uint8_t cmd[16];
+    uint16_t len;
+    len = sf_build_cmd('R', 2, cmd, sizeof(cmd)); // "#R2:" --> update rate 5002
+    usart_write(BSP_USART_LIDAR, cmd, len);
+    len = sf_build_cmd('U', 2, cmd, sizeof(cmd)); // "#U2:" --> serial output rate 5002
+    usart_write(BSP_USART_LIDAR, cmd, len);
 
     for (;;) {
-
+        if (usart_rx_ready(BSP_USART_LIDAR)) {
+            uint8_t b = usart_read_byte(BSP_USART_LIDAR);
+            if (sf_parser_feed(&lidar_ctx, b)) {
+                printf("Distance: %u cm\r\n", lidar_ctx.distance_cm);
+            }
+        }
     }
 }

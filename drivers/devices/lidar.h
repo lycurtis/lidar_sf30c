@@ -5,6 +5,8 @@
 #include <stdbool.h>
 #include <stdint.h>
 
+#define SF_CMD_NO_VALUE (-1)
+
 typedef enum {
     SF_PARSE_BYTE_HIGH,
     SF_PARSE_BYTE_LOW,
@@ -19,3 +21,5 @@ typedef struct {
 
 void sf_parser_init(sf_parse_ctx_t* p);
 bool sf_parser_feed(sf_parse_ctx_t* p, uint8_t byte);
+
+uint16_t sf_build_cmd(char mnemonic, int value, uint8_t* buf, uint16_t buf_size);
