@@ -3,7 +3,7 @@ cmake_minimum_required(VERSION 3.22)
 # Must be set before project()
 set(CMAKE_TOOLCHAIN_FILE ${CMAKE_CURRENT_SOURCE_DIR}/cmake/arm-none-eabi-gcc.cmake)
 
-project(lidar_sf30c_interface
+project(lidar_sf30c
     VERSION 1.0.0
     LANGUAGES C ASM
 )
